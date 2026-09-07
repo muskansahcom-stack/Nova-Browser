@@ -608,36 +608,50 @@ Respond strictly in JSON:
         };
       }
 
-      const searchYouTubeMatch = command.match(/^(?:search\s+youtube\s+for|search\s+on\s+youtube\s+for|go\s+to\s+youtube\s+and\s+search\s+for)\s+(.+)$/i);
-      if (searchYouTubeMatch) {
-        const q = searchYouTubeMatch[1].trim();
+      // A. "Search [Query] on [YouTube/Google/GitHub/Amazon/Reddit/Wikipedia]"
+      const searchTargetMatch = command.match(/^(?:search|find|look\s+up)(?:\s+for)?\s+(.+?)\s+(?:on|in)\s+(youtube|google|github|amazon|reddit|wikipedia|twitter|x)$/i);
+      if (searchTargetMatch) {
+        const query = searchTargetMatch[1].trim();
+        const serviceKey = searchTargetMatch[2].trim().toLowerCase();
+        const service = KNOWN_SERVICES[serviceKey];
+        const targetUrl = (service && service.searchUrl)
+          ? service.searchUrl(query)
+          : `https://www.google.com/search?q=${encodeURIComponent(query + ' site:' + serviceKey)}`;
+
         return {
-          thought: `Searching YouTube for "${q}"`,
-          goal: `Search YouTube for "${q}"`,
+          thought: `Searching ${serviceKey} for "${query}"`,
+          goal: `Search ${serviceKey} for "${query}"`,
           steps: [
-            { action: 'navigate', url: `https://www.youtube.com/results?search_query=${encodeURIComponent(q)}` },
+            { action: 'navigate', url: targetUrl },
             { action: 'wait', milliseconds: 2000 }
           ],
           verificationCriteria: {
-            expectedUrlContains: 'youtube.com/results',
-            description: `YouTube search results for "${q}" loaded`
+            expectedUrlContains: serviceKey,
+            description: `Search results for "${query}" on ${serviceKey} loaded`
           }
         };
       }
 
-      const searchGitHubMatch = command.match(/^(?:search\s+github\s+for|search\s+on\s+github\s+for|go\s+to\s+github\s+and\s+search\s+for|open\s+github\s+and\s+search\s+for)\s+(.+)$/i);
-      if (searchGitHubMatch) {
-        const q = searchGitHubMatch[1].trim();
+      // B. "Search [YouTube/Google/GitHub/Amazon/Reddit/Wikipedia] for [Query]"
+      const searchServiceForMatch = command.match(/^(?:search|look\s+up|go\s+to|open)(?:\s+on|\s+in)?\s+(youtube|google|github|amazon|reddit|wikipedia|twitter|x)\s+(?:and\s+search\s+for\s+|for\s+)?(.+)$/i);
+      if (searchServiceForMatch) {
+        const serviceKey = searchServiceForMatch[1].trim().toLowerCase();
+        const query = searchServiceForMatch[2].trim();
+        const service = KNOWN_SERVICES[serviceKey];
+        const targetUrl = (service && service.searchUrl)
+          ? service.searchUrl(query)
+          : `https://www.google.com/search?q=${encodeURIComponent(query)}`;
+
         return {
-          thought: `Searching GitHub for "${q}"`,
-          goal: `Search GitHub for "${q}"`,
+          thought: `Searching ${serviceKey} for "${query}"`,
+          goal: `Search ${serviceKey} for "${query}"`,
           steps: [
-            { action: 'navigate', url: `https://github.com/search?q=${encodeURIComponent(q)}` },
+            { action: 'navigate', url: targetUrl },
             { action: 'wait', milliseconds: 2000 }
           ],
           verificationCriteria: {
-            expectedUrlContains: 'github.com/search',
-            description: `GitHub search results for "${q}" loaded`
+            expectedUrlContains: serviceKey,
+            description: `Search results for "${query}" on ${serviceKey} loaded`
           }
         };
       }
