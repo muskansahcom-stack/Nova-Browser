@@ -85,6 +85,14 @@ const server = http.createServer((req, res) => {
       delete responseHeaders['content-security-policy'];
       delete responseHeaders['content-security-policy-report-only'];
       delete responseHeaders['frame-options'];
+      delete responseHeaders['cross-origin-opener-policy'];
+      delete responseHeaders['cross-origin-embedder-policy'];
+      delete responseHeaders['cross-origin-resource-policy'];
+      delete responseHeaders['permissions-policy'];
+      delete responseHeaders['origin-trial'];
+      delete responseHeaders['document-policy'];
+      delete responseHeaders['report-to'];
+      delete responseHeaders['reporting-endpoints'];
 
       responseHeaders['access-control-allow-origin'] = '*';
       responseHeaders['access-control-allow-methods'] = 'GET, POST, PUT, DELETE, OPTIONS';
