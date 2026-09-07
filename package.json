@@ -1,0 +1,28 @@
+{
+  "name": "nova-browser",
+  "version": "1.0.0",
+  "description": "Nova Browser - A General-Purpose Autonomous AI Browser Agent",
+  "main": "main.js",
+  "scripts": {
+    "start": "electron .",
+    "web": "node server.js",
+    "serve": "node server.js",
+    "dev": "electron . --enable-logging",
+    "test": "node tests/agent.test.js && node tests/planner.test.js && node tests/verifier.test.js"
+  },
+  "keywords": [
+    "ai-browser",
+    "ai-agent",
+    "browser-automation",
+    "electron",
+    "autonomous-agent"
+  ],
+  "author": "Nova Team",
+  "license": "MIT",
+  "dependencies": {
+    "dotenv": "^16.4.7"
+  },
+  "devDependencies": {
+    "electron": "^33.2.1"
+  }
+}
